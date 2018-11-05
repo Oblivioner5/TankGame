@@ -1,0 +1,67 @@
+<!doctype HTML>
+<html>
+<head>
+Experimental Build!<br>
+</head>
+<body>
+	
+	<div id="loginDiv">
+	
+		Username: <input id="username" type="text"></input><br>
+		Password: <input id="password" type="password"></input><br>
+		<button onClick="loginRequest()">Login</button>
+		<button onClick="registerRequest()">Register</button><br>
+	</div>
+	<div id='serverDiv' style='display:none;'>
+		<button onClick="joinGameRequest()">Join Game</button>
+		<button onClick="switchNewGame()">New Game</button>
+		<button onClick="refreshGames()">Refresh List</button><br>
+		<form id="serverList">
+		</form>
+	</div>
+	<div id='newGameDiv' style='display:none;'>
+		<button onClick="switchServerList()">Back</button>
+		<button onClick="joinNewGameRequest()">Create</button><br>
+		Name: 
+		<input type="text" id="newGameName" value="New Game">
+		<br>
+		
+		GameType: 
+		<select id='newGameType'>
+		  <option value="casual">Casual</option>
+		  <option value="ranked">Ranked</option>
+		</select><br>
+		
+		Max Players: 
+		<select id='newGamePlayers'>
+		  <option value=2>2</option>
+		  <option value=4>4</option>
+		  <option value=6>6</option>
+		  <option value=8>8</option>
+		  <option value=10>10</option>
+		</select><br>
+	</div>
+	
+	<div id="teamDiv" style="display:none;">
+		<button onClick = "quitGame()">Quit</button><br>
+		Choose a team!
+		
+		<div id="redTeam" class="split left">
+			
+		</div>
+		
+		<div id = "blueTeam" class = "split right">
+			
+		</div><br>
+		
+		<button onClick="joinRedTeam()">Join Red Team</button>
+		<button onClick="joinBlueTeam()">Join Blue Team</button>
+	</div>
+	
+	<div id="gameDiv" style="display:none;">
+		<button onClick = "quitGame()">Quit</button><br>
+	</div>
+	<script type="text/javascript" src= "experimental.js"> </script>
+</body>
+</html>
+

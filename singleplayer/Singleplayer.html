@@ -1,0 +1,138 @@
+<html>
+<body onload="startGame()">
+<script>
+
+var playerObjects = [];
+var bullets = [];
+function startGame() {
+    myGameArea.start();
+	playerObjects.push(new tank(45, 30, "red", 10, 120, 0, 0));
+}
+
+var myGameArea = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = 480;
+        this.canvas.height = 270;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.interval = setInterval(updateGameArea, 20);
+        window.addEventListener('keydown', function (e) {
+            myGameArea.keys = (myGameArea.keys || []);
+            myGameArea.keys[e.keyCode] = (e.type == "keydown");
+        })
+        window.addEventListener('keyup', function (e) {
+            myGameArea.keys[e.keyCode] = (e.type == "keydown");            
+        })
+    }, 
+    clear : function(){
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+function tank(width, height, color, x, y, angle, turret) {
+	this.bulletFired = false;
+	this.color = color;
+    this.width = width;
+    this.height = height;
+	this.speed = 0;
+	this.speedAngle = 0;
+	this.rotateCenter = 0;
+	this.speedTurret = 0;
+    this.x = x;
+    this.y = y;  
+	this.xc = x + width/2;
+	this.yc = y + height/2;
+	this.angle = angle;
+	this.turret = turret;
+    this.update = function() {
+		this.x += this.speed * Math.cos(this.angle*Math.PI/180);
+        this.y += this.speed * Math.sin(this.angle*Math.PI/180);
+		this.angle += this.speedAngle;
+		this.turret += this.speedTurret;
+		this.xc = this.x +this.width/2;//+ (this.width/2)*Math.cos(this.angle*Math.PI/180); //+ this.height*Math.sin(this.angle*Math.PI/180);
+		this.yc = this.y +this.height/2;//+ (this.height/2)*Math.cos(this.angle*Math.PI/180);// + this.height*Math.cos(this.angle*Math.PI/180);
+	
+        ctx = myGameArea.context;
+        ctx.fillStyle = this.color;
+		ctx.save();
+		ctx.translate(this.x + this.width/2, this.y + this.height/2);
+		ctx.rotate((this.angle)*Math.PI/180);
+		ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+		ctx.rotate((this.turret-this.angle)*Math.PI/180);
+		ctx.fillStyle = 'blue';
+		ctx.fillRect(0, -2, 40, 4);
+		ctx.restore();
+    }
+}
+
+function bullet(x, y, angle, color){
+	this.width = 10;
+	this.height = 4;
+	this.speed = 6;
+	this.x = x;
+	this.y = y;
+	this.angle = angle;
+	this.color = color;
+	this.update = function() {
+		this.x += this.speed * Math.cos(this.angle*Math.PI/180);
+		this.y += this.speed * Math.sin(this.angle*Math.PI/180);
+		
+		ctx = myGameArea.context;
+        ctx.fillStyle = this.color;
+		ctx.save();
+		ctx.translate(this.x, this.y);
+		ctx.rotate((this.angle)*Math.PI/180);
+		ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+		ctx.restore();
+	}
+}
+
+function updateGameArea() {
+    myGameArea.clear();
+    for (i = 0; i < playerObjects.length; i++){
+		playerObjects[i].speed = 0;    
+		playerObjects[i].speedAngle = 0;
+		playerObjects[i].speedTurret = 0;
+		playerObjects[i].rotateCenter = 0;
+		if (myGameArea.keys && myGameArea.keys[65] && myGameArea.keys[83]) {playerObjects[i].speed = 1; }	//A & S
+		else if (myGameArea.keys && myGameArea.keys[65] && myGameArea.keys[88]) {playerObjects[i].speedAngle = 1; }	//A & X
+		else if (myGameArea.keys && myGameArea.keys[90] && myGameArea.keys[83]) {playerObjects[i].speedAngle = -1; } //Z & S
+		else if (myGameArea.keys && myGameArea.keys[90] && myGameArea.keys[88]) {playerObjects[i].speed = -1; } // Z & X
+		else if (myGameArea.keys && myGameArea.keys[65]) {playerObjects[i].rotateCenter = -1; playerObjects[i].speedAngle = 1/2;}	//A
+		else if (myGameArea.keys && myGameArea.keys[90]) {playerObjects[i].rotateCenter = -1; playerObjects[i].speedAngle = -1/2;}	//Z
+		else if (myGameArea.keys && myGameArea.keys[83]) {playerObjects[i].rotateCenter = 1; playerObjects[i].speedAngle = -1/2;}	//S
+		else if (myGameArea.keys && myGameArea.keys[88]) {playerObjects[i].rotateCenter = 1; playerObjects[i].speedAngle = 1/2;}	//X
+		if (myGameArea.keys && myGameArea.keys[69]) {playerObjects[i].speedTurret = 1; }
+		if (myGameArea.keys && myGameArea.keys[81]) {playerObjects[i].speedTurret = -1; }
+		if (myGameArea.keys && myGameArea.keys[32] & !playerObjects[i].bulletFired) {
+			bullets.push(new bullet(playerObjects[i].xc, playerObjects[i].yc, playerObjects[i].turret, playerObjects[i].color))
+			playerObjects[i].bulletFired = true;
+			console.log(playerObjects[i].bulletFired);
+			} //Space
+		else if(myGameArea.keys && !myGameArea.keys[32]){
+			playerObjects[i].bulletFired = false;
+		}
+		playerObjects[i].update();
+		
+		//81: q
+		//87: w
+		//69: e 
+		//65: a
+		//83: s
+		//68: d
+		//32: space
+		//90: z
+		//88: x 
+		
+	}
+	for (i = 0; i < bullets.length; i++){
+		bullets[i].update();
+		if( bullets[i].x < 0 | bullets[i].x > myGameArea.canvas.width |  bullets[i].y < 0 | bullets[i].y > myGameArea.canvas.height){
+			bullets.splice(i,1);
+		}
+	}
+}
+</script>
+</body>
+</html>

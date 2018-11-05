@@ -1,0 +1,67 @@
+<html>
+<body>
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script src="/client/drawing.js"></script>
+<script>
+	var socket = io();
+	var canvas = document.createElement("canvas")
+	canvas.width = 480;
+	canvas.height = 270;
+	ctx = canvas.getContext("2d");
+	drawing = new Drawing(ctx);
+
+	document.body.insertBefore(canvas, document.body.childNodes[0]);
+	window.addEventListener('keydown', function (e) {
+				myGameArea.keys = (myGameArea.keys || []);
+				myGameArea.keys[e.keyCode] = (e.type == "keydown");
+				socket.emit('keyUpdate',{keys:myGameArea.keys});
+			})
+			window.addEventListener('keyup', function (e) {
+				myGameArea.keys[e.keyCode] = (e.type == "keydown");
+				socket.emit('keyUpdate',{keys: myGameArea.keys});
+			})
+	var myGameArea = {
+		start : function() {
+			
+		}, 
+	}	
+	
+	socket.on('loadGame',function(data){
+		//***
+	});
+	
+
+	socket.on('serverMsg',function(data){
+		console.log(data.msg);	
+	});
+	
+	socket.on('loadGame',function(){
+		//myGameArea.start();
+		});
+
+	socket.on('test',function(){
+		console.log('periodic function call');
+		});
+		
+	socket.on('send-state',function(state){
+		player = state.player;
+		tanks = state.tanks; //everyone else
+		drawing.clear();
+		//drawing.drawTank(player.x, player.y, player.angle, player.turret, 'Red');
+		for (i = 0; i < tanks.length; i++){
+			drawing.drawTank(tanks[i].x, tanks[i].y, tanks[i].angle, tanks[i].turret, 'Red');
+		}
+		//drawing.drawBullet();
+		if(state.isDriver){
+			drawing.drawVision(player.x,player.y,player.angle);
+			}
+		else{
+			drawing.drawVision(player.x,player.y,player.turret);
+			}
+		drawing.drawTank(player.x,player.y,player.angle,player.turret,player.color);
+		});
+		
+	
+</script>
+</body>
+</html>
