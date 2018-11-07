@@ -1,67 +1,85 @@
+<!-- TODO: Include a FFA mode in addition to red v blue -->
+<!-- Update server-side with current experimentals -->
+<!-- Add database functionality for logins & stats -->
+<!-- correctly split code into files -->
+
+<!DOCTYPE html>
 <html>
+
+<head>
+	<link rel="shortcut icon" id="favicon" type="image/png" href="./client/img/favicon.png">
+</head>
+
 <body>
-<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-<script src="/client/drawing.js"></script>
-<script>
-	var socket = io();
-	var canvas = document.createElement("canvas")
-	canvas.width = 480;
-	canvas.height = 270;
-	ctx = canvas.getContext("2d");
-	drawing = new Drawing(ctx);
-
-	document.body.insertBefore(canvas, document.body.childNodes[0]);
-	window.addEventListener('keydown', function (e) {
-				myGameArea.keys = (myGameArea.keys || []);
-				myGameArea.keys[e.keyCode] = (e.type == "keydown");
-				socket.emit('keyUpdate',{keys:myGameArea.keys});
-			})
-			window.addEventListener('keyup', function (e) {
-				myGameArea.keys[e.keyCode] = (e.type == "keydown");
-				socket.emit('keyUpdate',{keys: myGameArea.keys});
-			})
-	var myGameArea = {
-		start : function() {
+	<div id="loginDiv">
+		Username: <input id="username" type="text"></input><br>
+		Password: <input id="password" type="password"></input><br>
+		<button onClick="loginRequest()">Login</button>
+		<button onClick="registerRequest()">Register</button><br>
+	</div>
+	
+	<div id='serverDiv' style='display:none;'>
+		<button onClick="joinGameRequest()">Join Game</button>
+		<button onClick="switchNewGame()">New Game</button>
+		<button onClick="refreshGames()">Refresh List</button><br>
+		<form id="serverList">
+		</form>
+	</div>
+	
+	<div id='newGameDiv' style='display:none;'>
+		<button onClick="switchServerList()">Back</button>
+		<button onClick="newGameRequest()">Create</button><br>
+		Name: 
+		<input type="text" id="newGameName" value="New Game">
+		<br>
+		
+		GameType: 
+		<select id='newGameType'>
+		  <option value="casual">Casual</option>
+		  <option value="ranked">Ranked</option>
+		</select><br>
+		
+		Teams?
+		<select id='newGameTeams'>
+		  <option value="RVB">Red VS Blue</option>
+		  <option value="FFA">Free For All</option>
+		</select><br>
+		
+		Max Players: 
+		<select id='newGamePlayers'>
+		  <option value=2>2</option>
+		  <option value=4>4</option>
+		  <option value=6>6</option>
+		  <option value=8>8</option>
+		  <option value=10>10</option>
+		</select><br>
+	</div>
+	
+	<div id="teamDiv" style="display:none;">
+		<button onClick = "quitGame()">Quit</button><br>
+		Choose a team!
+		
+		<div id="redTeam" class="split left">
 			
-		}, 
-	}	
-	
-	socket.on('loadGame',function(data){
-		//***
-	});
-	
-
-	socket.on('serverMsg',function(data){
-		console.log(data.msg);	
-	});
-	
-	socket.on('loadGame',function(){
-		//myGameArea.start();
-		});
-
-	socket.on('test',function(){
-		console.log('periodic function call');
-		});
+		</div>
 		
-	socket.on('send-state',function(state){
-		player = state.player;
-		tanks = state.tanks; //everyone else
-		drawing.clear();
-		//drawing.drawTank(player.x, player.y, player.angle, player.turret, 'Red');
-		for (i = 0; i < tanks.length; i++){
-			drawing.drawTank(tanks[i].x, tanks[i].y, tanks[i].angle, tanks[i].turret, 'Red');
-		}
-		//drawing.drawBullet();
-		if(state.isDriver){
-			drawing.drawVision(player.x,player.y,player.angle);
-			}
-		else{
-			drawing.drawVision(player.x,player.y,player.turret);
-			}
-		drawing.drawTank(player.x,player.y,player.angle,player.turret,player.color);
-		});
+		<div id = "blueTeam" class = "split right">
+			
+		</div><br>
 		
+		<button onClick="joinTeam('red')">Join Red Team</button>
+		<button onClick="joinTeam('blue')">Join Blue Team</button>
+	</div>
 	
-</script>
+	<div id="gameDiv" style="display:none;">
+		<button onClick = "quitGame()">Quit</button><br>
+	</div>
+	
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	
+	<script src = "/client/drawing.js"></script>
+	<script src = "/client/input.js"></script>
+	<!-- <script src = "/shared/utility.js"></script> Cannot find for some reason! -->
+	<script  src="/client/client.js"> </script>
 </body>
 </html>

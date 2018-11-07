@@ -1,8 +1,10 @@
+//Handles everything that goes on the game canvas
+
 function Drawing(ctx) {
   this.ctx = ctx;
   this.clear = function(){
 	this.ctx.beginPath();
-	this.ctx.clearRect(0, 0, 480, 270);
+	this.ctx.clearRect(0, 0, 1224, 768);
 	this.ctx.closePath();
 }
 	
@@ -54,7 +56,7 @@ function Drawing(ctx) {
 		
 		this.ctx.fillStyle = 'black';
 		this.ctx.beginPath();
-		this.ctx.arc(0,0,1000,(0.2)*Math.PI,(1.8)*Math.PI);
+		this.ctx.arc(0,0,1500,(0.2)*Math.PI,(1.8)*Math.PI);
 		this.ctx.lineTo(0,0)
 		this.ctx.closePath();
 		this.ctx.fill();
