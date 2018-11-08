@@ -1,3 +1,12 @@
+//***TODO:
+//Add bullets on space
+//Include collision.js which is already in the folder
+//Show health
+//Show feedback on tanks being hit
+//Show death
+//Show kills
+//Win screen
+
 var SSCD = require('sscd').sscd;
 var express = require('express');
 var app = express();
@@ -136,6 +145,7 @@ io.sockets.on('connection', function(socket){
 		}
 		//Update redplayers or blueplayers with the name of the player
 		if(request == 'blue'){
+			players[socket.id].team = 'blue';
 			if(players[socket.id].game.bluePlayers[0].length == 0){
 				players[socket.id].game.bluePlayers[0] = players[socket.id].username;
 			}
@@ -144,6 +154,7 @@ io.sockets.on('connection', function(socket){
 			}
 		}
 		else{
+			players[socket.id].team = 'red';
 			if(players[socket.id].game.redPlayers[0].length == 0){
 				players[socket.id].game.redPlayers[0] = players[socket.id].username;
 			}
@@ -162,7 +173,7 @@ io.sockets.on('connection', function(socket){
 			}
 		}
 		//New Tank
-		var tmp = new Tank('blue', 50, 50, 0, 0, socket.id);
+		var tmp = new Tank(request, 50, 50, 0, 0, socket.id);
 		players[socket.id].game.tanks.push(tmp);
 		players[socket.id].joinTank(tmp,'driver');
 		callback(true,'');
@@ -278,9 +289,9 @@ function update(){
 function sendState(){
 	for (i = 0; i<clients.length; i++){
 		if(players[clients[i]].game != null && players[clients[i]].game.tanks != null){
-			var idx = players[clients[i]].game.tanks.indexOf(players[clients[i]].game.tank);
-			var tmp = players[clients[i]].game.tanks;
-			tmp = tmp.slice(idx,1);
+			var tmp = players[clients[i]].game.tanks.slice();
+			var idx = tmp.indexOf(players[clients[i]].tank);
+			tmp.splice(idx,1);
 			players[clients[i]].socket.emit('send-state',{
 				player: players[clients[i]].tank,
 				seat: players[clients[i]].seat,

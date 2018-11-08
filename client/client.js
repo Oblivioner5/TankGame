@@ -247,18 +247,28 @@ socket.on('send-state',function(state){
 	var player = state.player;
 	tanks = state.tanks; //Excludes player
 	drawing.clear();
-	drawing.drawTank(player.x, player.y, player.angle, player.turret, player.color);
-	for (i = 0; i < tanks.length; i++){
-		drawing.drawTank(tanks[i].x, tanks[i].y, tanks[i].angle, tanks[i].turret, tanks[i].color);
+	if(player != null){
+		console.log(player);
+		drawing.drawTank(player.x, player.y, player.angle, player.turret, player.color);
 	}
-	//drawing.drawBullet();
-	if(state.seat == "driver"){
-		drawing.drawVision(player.x,player.y,player.angle);
+	if(tanks != null){
+		console.log(tanks)
+		for (i = 0; i < tanks.length; i++){
+			drawing.drawTank(tanks[i].x, tanks[i].y, tanks[i].angle, tanks[i].turret, tanks[i].color);
+		}
 	}
-	else{
-		drawing.drawVision(player.x,player.y,player.turret);
+	if(state.projectiles != null){
+		//drawing.drawBullet();
 	}
-	drawing.drawTank(player.x,player.y,player.angle,player.turret,player.color);
+	if(player != null){
+		if(state.seat == "driver"){
+			drawing.drawVision(player.x,player.y,player.angle);
+		}
+		else{
+			drawing.drawVision(player.x,player.y,player.turret);
+		}
+		drawing.drawTank(player.x,player.y,player.angle,player.turret,player.color);
+	}
 });
 			
 		
